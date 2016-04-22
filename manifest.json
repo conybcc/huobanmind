@@ -8,13 +8,18 @@
 			"19": "cnblogs_19.png",
 			"38": "cnblogs_38.png"
 		},
-		"default_title": "伙伴网的脑图插件",
-		"default_popup": "popup/index.html"
+		"default_title": "伙伴网的脑图插件"
 	},
 	"permissions" : ["tabs"],
 	"content_scripts":[{
 		"matches":["https://app.huoban.com/*", "https://api.huoban.com/*"],
-		"js":["jquery-2.0.0.min.js", "content_script.js"],
+		"js":[
+			"jquery-2.0.0.min.js",
+			"content_script.js",
+			"content/lib/d3.v3.min.js",
+			"content/main.js",
+			"content/popup.js"
+		],
 		"run_at":"document_end"
 	}]
 }

@@ -146,19 +146,3 @@ function buildTreeData(app, filterResult) {
     return flare;
 }
 
-chrome.extension.getBackgroundPage().getApp(function(app) {
-  chrome.extension.getBackgroundPage().listItem(function(msg) {
-    displayTree(buildTreeData(app, msg));
-  });
-});
-
-// document.addEventListener('DOMContentLoaded', function () {
-// 	var huobanData = chrome.extension.getBackgroundPage().huobanData;
-// 	$("#message").hide();
-// 	$("#current_url").text('appId:' + huobanData.appId);
-
-//     access_token = huobanData.access_token;
-//     appId = huobanData.appId;
-
-//     start();
-// });

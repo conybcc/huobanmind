@@ -38,11 +38,12 @@ chrome.tabs.onUpdated.addListener(checkForValidUrl);
 
 
 var huobanData = {};
-console.log ('chrome.runtime.onMessage.addListener');
-chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
+// console.log ('chrome.runtime.onMessage.addListener');
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
 	console.log(request);
-
+	// console.log(request);
 	if (request.type == 'init') {
 		if (isItemListUrl(request.url)) {
 			setAppId(request.url)
@@ -52,9 +53,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
 
 		huobanData.access_token = request.access_token;
 	}
+
+	if (request.type == 'getApp') {
+		getApp(sendResponse);
+	}
+
+	if (request.type == 'listItem') {
+		listItem(sendResponse);
+	}
+
+	return true;
 });
 
-var listItem = function (callback) {
+var listItem = function (sendResponse) {
 	$.ajax({
 	    url: "https://api.huoban.com/v1/item/app/"+huobanData.appId+"/filter",
 	    type: "POST",
@@ -63,16 +74,16 @@ var listItem = function (callback) {
 	    },
 	    // data: JSON.stringify({url:articleData.url}),
 	    dataType: "json"
-	}).done(function(msg) {
-	    console.log(msg);
-	    callback(msg);
+	}).done(function(itemResult) {
+    	// chrome.runtime.sendMessage(itemResult);
+    	sendResponse(itemResult);
 	}).fail(function(jqXHR, textStatus) {
 	    console.log(jqXHR);
 	    console.log(textStatus);
 	});
 }
 
-var getApp = function (callback) {
+var getApp = function (sendResponse) {
 	$.ajax({
 	    url: "https://api.huoban.com/v1/app/"+huobanData.appId,
 	    type: "GET",
@@ -81,9 +92,9 @@ var getApp = function (callback) {
 	    },
 	    // data: JSON.stringify({url:articleData.url}),
 	    dataType: "json"
-	}).done(function(msg) {
-	    console.log(msg);
-	    callback(msg);
+	}).done(function(app) {
+    	// chrome.runtime.sendMessage(app);
+    	sendResponse(app);
 	}).fail(function(jqXHR, textStatus) {
 	    console.log(jqXHR);
 	    console.log(textStatus);
