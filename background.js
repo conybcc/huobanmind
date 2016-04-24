@@ -60,20 +60,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 	}
 
 	if (request.type == 'listItem') {
-		listItem(sendResponse);
+		listItem(request.viewId, sendResponse);
+	}
+
+	if (request.type == 'listPublicView') {
+		listPublicView(sendResponse);
+	}
+
+	if (request.type == 'listPrivateView') {
+		listPrivateView(sendResponse);
 	}
 
 	return true;
 });
 
-var listItem = function (sendResponse) {
+var listItem = function(viewId, sendResponse) {
 	$.ajax({
-	    url: "https://api.huoban.com/v1/item/app/"+huobanData.appId+"/filter",
+	    url: "https://api.huoban.com/v1/item/app/"+huobanData.appId+"/view/" + viewId+"/filter",
 	    type: "POST",
 	    headers: {
 	        "Authorization":"Bearer " + huobanData.access_token,
 	    },
-	    // data: JSON.stringify({url:articleData.url}),
+	    data: JSON.stringify({limit:100}),
 	    dataType: "json"
 	}).done(function(itemResult) {
     	// chrome.runtime.sendMessage(itemResult);
@@ -96,6 +104,40 @@ var getApp = function (sendResponse) {
 	}).done(function(app) {
     	// chrome.runtime.sendMessage(app);
     	sendResponse(app);
+	}).fail(function(jqXHR, textStatus) {
+	    console.log(jqXHR);
+	    console.log(textStatus);
+	});
+}
+
+var listPublicView = function(sendResponse) {
+	$.ajax({
+	    url: "https://api.huoban.com/v1/view/app/"+huobanData.appId+"/public/?limit=100&offset=0",
+	    type: "GET",
+	    headers: {
+	        "Authorization":"Bearer " + huobanData.access_token,
+	    },
+	    // data: JSON.stringify({url:articleData.url}),
+	    dataType: "json"
+	}).done(function(views) {
+    	sendResponse(views);
+	}).fail(function(jqXHR, textStatus) {
+	    console.log(jqXHR);
+	    console.log(textStatus);
+	});
+}
+
+var listPrivateView = function(sendResponse) {
+	$.ajax({
+	    url: "https://api.huoban.com/v1/view/app/"+huobanData.appId+"/private/?limit=100&offset=0",
+	    type: "GET",
+	    headers: {
+	        "Authorization":"Bearer " + huobanData.access_token,
+	    },
+	    // data: JSON.stringify({url:articleData.url}),
+	    dataType: "json"
+	}).done(function(views) {
+    	sendResponse(views);
 	}).fail(function(jqXHR, textStatus) {
 	    console.log(jqXHR);
 	    console.log(textStatus);
