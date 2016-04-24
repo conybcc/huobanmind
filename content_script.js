@@ -2,6 +2,7 @@
 // console.log('content_script loaded');
 // var userInfo = $("span.mod_avatar.avt_small");
 // chrome.runtime.sendMessage({type:"no_user", error:"没有登录."});
+var appId;
 function main() {
     init_token();
     add_button();
@@ -15,7 +16,9 @@ function init_token() {
     var msg = {"type": "init", "url": document.URL, "access_token":access_token};
 
     console.log(access_token);
-    chrome.runtime.sendMessage(msg);
+    chrome.runtime.sendMessage(msg, function(returnAppId) {
+        appId = returnAppId;
+    });
 }
 
 var listItemCallback = function(itemResult){
@@ -29,7 +32,7 @@ var getAppCallback = function(app){
 
 function add_button() {
 
-    var button = $('<a hb_status="close" "title"="点击开启脑图模式" id="plugin_huobanmind_button" style="position: fixed; bottom: 150px; left: 0; z-index: 2147483639; width: auto; background-color: transparent;">脑图模式</a>');
+    var button = $('<a hb_status="close" title="点击开启脑图模式" id="plugin_huobanmind_button" style="width: 30px;text-align: center;background-color: #9CC0FA;position: fixed;bottom: 150px;left: 0;z-index: 2147483639;font-weight: 600;cursor: pointer;">脑图模式</a>');
     $('body').append(button);
     $('body').append($('<style type="text/css">.node {cursor: pointer; } .node circle {fill: #fff; stroke: steelblue; stroke-width: 1.5px; } .node text {font: 10px sans-serif; } svg .link {fill: none; stroke: #ccc; stroke-width: 1.5px; }</style>'));
 

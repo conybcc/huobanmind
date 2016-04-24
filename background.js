@@ -52,6 +52,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		}
 
 		huobanData.access_token = request.access_token;
+		sendResponse(huobanData.appId);
 	}
 
 	if (request.type == 'getApp') {
