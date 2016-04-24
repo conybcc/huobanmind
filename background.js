@@ -38,11 +38,12 @@ chrome.tabs.onUpdated.addListener(checkForValidUrl);
 
 
 var huobanData = {};
-console.log ('chrome.runtime.onMessage.addListener');
-chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
+// console.log ('chrome.runtime.onMessage.addListener');
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 
 	console.log(request);
-
+	// console.log(request);
 	if (request.type == 'init') {
 		if (isItemListUrl(request.url)) {
 			setAppId(request.url)
@@ -51,28 +52,47 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
 		}
 
 		huobanData.access_token = request.access_token;
+		sendResponse(huobanData.appId);
 	}
+
+	if (request.type == 'getApp') {
+		getApp(sendResponse);
+	}
+
+	if (request.type == 'listItem') {
+		listItem(request.viewId, sendResponse);
+	}
+
+	if (request.type == 'listPublicView') {
+		listPublicView(sendResponse);
+	}
+
+	if (request.type == 'listPrivateView') {
+		listPrivateView(sendResponse);
+	}
+
+	return true;
 });
 
-var listItem = function (callback) {
+var listItem = function(viewId, sendResponse) {
 	$.ajax({
-	    url: "https://api.huoban.com/v1/item/app/"+huobanData.appId+"/filter",
+	    url: "https://api.huoban.com/v1/item/app/"+huobanData.appId+"/view/" + viewId+"/filter",
 	    type: "POST",
 	    headers: {
 	        "Authorization":"Bearer " + huobanData.access_token,
 	    },
-	    // data: JSON.stringify({url:articleData.url}),
+	    data: JSON.stringify({limit:100}),
 	    dataType: "json"
-	}).done(function(msg) {
-	    console.log(msg);
-	    callback(msg);
+	}).done(function(itemResult) {
+    	// chrome.runtime.sendMessage(itemResult);
+    	sendResponse(itemResult);
 	}).fail(function(jqXHR, textStatus) {
 	    console.log(jqXHR);
 	    console.log(textStatus);
 	});
 }
 
-var getApp = function (callback) {
+var getApp = function (sendResponse) {
 	$.ajax({
 	    url: "https://api.huoban.com/v1/app/"+huobanData.appId,
 	    type: "GET",
@@ -81,9 +101,43 @@ var getApp = function (callback) {
 	    },
 	    // data: JSON.stringify({url:articleData.url}),
 	    dataType: "json"
-	}).done(function(msg) {
-	    console.log(msg);
-	    callback(msg);
+	}).done(function(app) {
+    	// chrome.runtime.sendMessage(app);
+    	sendResponse(app);
+	}).fail(function(jqXHR, textStatus) {
+	    console.log(jqXHR);
+	    console.log(textStatus);
+	});
+}
+
+var listPublicView = function(sendResponse) {
+	$.ajax({
+	    url: "https://api.huoban.com/v1/view/app/"+huobanData.appId+"/public/?limit=100&offset=0",
+	    type: "GET",
+	    headers: {
+	        "Authorization":"Bearer " + huobanData.access_token,
+	    },
+	    // data: JSON.stringify({url:articleData.url}),
+	    dataType: "json"
+	}).done(function(views) {
+    	sendResponse(views);
+	}).fail(function(jqXHR, textStatus) {
+	    console.log(jqXHR);
+	    console.log(textStatus);
+	});
+}
+
+var listPrivateView = function(sendResponse) {
+	$.ajax({
+	    url: "https://api.huoban.com/v1/view/app/"+huobanData.appId+"/private/?limit=100&offset=0",
+	    type: "GET",
+	    headers: {
+	        "Authorization":"Bearer " + huobanData.access_token,
+	    },
+	    // data: JSON.stringify({url:articleData.url}),
+	    dataType: "json"
+	}).done(function(views) {
+    	sendResponse(views);
 	}).fail(function(jqXHR, textStatus) {
 	    console.log(jqXHR);
 	    console.log(textStatus);
