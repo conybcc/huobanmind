@@ -62,7 +62,6 @@ function add_button() {
     });
 }
 
-
 function check_in_list() {
     // todo
     return true;
