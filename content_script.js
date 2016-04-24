@@ -29,21 +29,32 @@ var getAppCallback = function(app){
 
 function add_button() {
 
-    var button = $('<a id="plugin_huobanmind_button" style="position: fixed; bottom: 150px; left: 0; z-index: 2147483639; width: auto; background-color: transparent;">脑图模式</a>');
+    var button = $('<a hb_status="close" "title"="点击开启脑图模式" id="plugin_huobanmind_button" style="position: fixed; bottom: 150px; left: 0; z-index: 2147483639; width: auto; background-color: transparent;">脑图模式</a>');
     $('body').append(button);
+    $('body').append($('<style type="text/css">.node {cursor: pointer; } .node circle {fill: #fff; stroke: steelblue; stroke-width: 1.5px; } .node text {font: 10px sans-serif; } svg .link {fill: none; stroke: #ccc; stroke-width: 1.5px; }</style>'));
+
 
     button.click(function(){
         if (!check_in_list()) {
             return;
         }
 
-        chrome.runtime.sendMessage({"type":"getApp"}, function(app) {
-            chrome.runtime.sendMessage({"type":"listItem"}, function(itemResult) {
-                treeData = buildTreeData(app, itemResult);
-                $("#root").hide();
-                displayTree(treeData);
+        if (button.attr("hb_status") == "close") {
+            button.attr("hb_status", "open");
+            button.attr("title", "点击退出脑图模式");
+
+            chrome.runtime.sendMessage({"type":"getApp"}, function(app) {
+                chrome.runtime.sendMessage({"type":"listItem"}, function(itemResult) {
+                    treeData = buildTreeData(app, itemResult);
+                    $("#root").hide();
+                    displayTree(treeData);
+                });
             });
-        });
+        } else {
+            button.attr("hb_status", "close");
+            button.attr("title", "点击退出脑图模式");
+            $("#root").show();
+        }
         return;
     });
 }
