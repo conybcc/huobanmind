@@ -104,6 +104,8 @@ function __showConfirmAppAndOther(app, publicViews, privateViews) {
     var allowedFields = listAllowedNodeField(app);
     var allowedField, option, publicView, privateView;
 
+    console.log(allowedFields, publicViews, privateViews);
+
     for (var i = allowedFields.length - 1; i >= 0; i--) {
         allowedField = allowedFields[i];
         option = $('<option hb_field_id="'+allowedField.field_id+'">'+allowedField.name+'</option>');
@@ -116,11 +118,14 @@ function __showConfirmAppAndOther(app, publicViews, privateViews) {
         confirmPopup.children("#plugin_huobanmind_view_list").append(option);
     }
 
-    for (var i = privateViews.length - 1; i >= 0; i--) {
-        privateView = privateViews[i];
-        option = $('<option hb_view_id="'+privateView.view_id+'">'+privateView.name+'</option>');
-        confirmPopup.children("#plugin_huobanmind_view_list").append(option);
+    if (privateViews) {
+       for (var i = privateViews.length - 1; i >= 0; i--) {
+            privateView = privateViews[i];
+            option = $('<option hb_view_id="'+privateView.view_id+'">'+privateView.name+'</option>');
+            confirmPopup.children("#plugin_huobanmind_view_list").append(option);
+        }
     }
+
 
     $('body').append(confirmPopup);
     confirmIsCreated = true;
